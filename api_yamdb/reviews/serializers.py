@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ...models import Review, Comment
+from .models import Review, Comment
 from api_yamdb.settings import USER
 
 
