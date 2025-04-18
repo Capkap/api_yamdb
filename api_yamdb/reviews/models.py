@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-from api_yamdb.settings import USER
+from users.models import User
 from titles.models import Title
 
 
@@ -25,7 +25,7 @@ class Review(models.Model):
         help_text='Оценка от 1 до 10'
     )
     author = models.ForeignKey(
-        USER,
+        User,
         on_delete=models.CASCADE,
         verbose_name='Автор',
         editable=False
@@ -69,7 +69,7 @@ class Comment(models.Model):
         null=False
     )
     author = models.ForeignKey(
-        USER,
+        User,
         on_delete=models.CASCADE,
         verbose_name='Автор',
         editable=False

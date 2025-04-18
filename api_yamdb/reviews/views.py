@@ -1,63 +1,38 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework.reverse import reverse
-from rest_framework import generics
+from rest_framework import viewsets
 from .models import Review, Comment
-from .serializers import ReviewSerializer, CommentSerializer
-from api.permissions import (AuthorModeratorAdminOrSafeMethodOnly)
+from api.serializers import ReviewSerializer, CommentSerializer
+from users.permissions import AuthorModeratorAdminOrSafeMethodOnly
 
 
-class ReviewList(generics.ListCreateAPIView):
-    queryset = Review.objects.all()
+class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (AuthorModeratorAdminOrSafeMethodOnly,)
+
+    def get_queryset(self):
+        title_id = self.kwargs.get('title_id')
+        return Review.objects.filter(title_id=title_id)
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(
+            author=self.request.user,
+            title_id=self.kwargs.get('title_id')
+        )
 
 
-class ReviewUpdate(generics.RetrieveUpdateAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    permission_classes = (AuthorModeratorAdminOrSafeMethodOnly,)
-
-    def perform_update(self, serializer):
-        serializer.save()
-
-
-class ReviewDestroy(generics.RetrieveDestroyAPIView):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
-    permission_classes = (AuthorModeratorAdminOrSafeMethodOnly,)
-
-
-class CommentList(generics.ListCreateAPIView):
-    queryset = Comment.objects.all()
+class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = (AuthorModeratorAdminOrSafeMethodOnly,)
+
+    def get_queryset(self):
+        title_id = self.kwargs.get('title_id')
+        review_id = self.kwargs.get('review_id')
+        return Comment.objects.filter(
+            review_id=review_id,
+            review__title_id=title_id
+        )
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
-
-
-class CommentUpdate(generics.RetrieveUpdateAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = (AuthorModeratorAdminOrSafeMethodOnly,)
-
-    def perform_update(self, serializer):
-        serializer.save()
-
-
-class CommentDestroy(generics.RetrieveDestroyAPIView):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = (AuthorModeratorAdminOrSafeMethodOnly,)
-
-
-@api_view(['GET'])
-def api_root(request, format=None):
-    return Response({
-        'review': reverse('review-list', request=request, format=format),
-        'comment': reverse('comment-list', request=request, format=format)
-    })
+        serializer.save(
+            author=self.request.user,
+            review_id=self.kwargs.get('review_id')
+        )
