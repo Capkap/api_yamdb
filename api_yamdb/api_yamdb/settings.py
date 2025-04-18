@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'django_filters',
     'reviews.apps.ReviewsConfig',
     'api.apps.ApiConfig',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -71,7 +72,7 @@ DATABASES = {
 
 # Auth model
 
-AUTH_USER_MODEL = 'reviews.User'
+AUTH_USER_MODEL = 'users.User'
 
 
 # DRF settings
