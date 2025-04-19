@@ -1,17 +1,20 @@
+import secrets
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+
 
 class User(AbstractUser):
     USER = 'user'
     MODERATOR = 'moderator'
     ADMIN = 'admin'
-    
+
     ROLE_CHOICES = [
         (USER, 'User'),
         (MODERATOR, 'Moderator'),
         (ADMIN, 'Admin'),
     ]
-    
+
     email = models.EmailField(unique=True, max_length=254)
     bio = models.TextField(blank=True)
     role = models.CharField(
@@ -20,7 +23,7 @@ class User(AbstractUser):
         default=USER,
     )
     confirmation_code = models.CharField(
-        max_length=100,
+        max_length=32,
         blank=True,
     )
 
@@ -34,3 +37,9 @@ class User(AbstractUser):
     @property
     def is_moderator(self):
         return self.role == self.MODERATOR
+
+    def generate_confirmation_code(self):
+        code = secrets.token_hex(6)
+        self.confirmation_code = code
+        self.save()
+        return code
