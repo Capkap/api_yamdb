@@ -9,9 +9,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
+from users.models import User
 from users.serializers import SignUpSerializer, TokenSerializer
-
-User = get_user_model()
 
 
 class SignUpView(views.APIView):

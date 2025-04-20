@@ -1,10 +1,9 @@
 import re
 
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 
-User = get_user_model()
+from users.models import User
 
 
 class SignUpSerializer(serializers.Serializer):
