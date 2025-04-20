@@ -1,3 +1,5 @@
+from decouple import config
+
 from pathlib import Path
 
 
@@ -71,6 +73,22 @@ DATABASES = {
     }
 }
 
+# Auth model
+
+AUTH_USER_MODEL = 'users.User'
+
+
+# DRF settings
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+
 
 # Password validation
 
@@ -92,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
 
@@ -108,6 +126,20 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
+
+# Email messages
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = config('EMAIL_HOST')
+
+EMAIL_PORT = config('EMAIL_PORT', cast=int)
+
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', cast=bool)
+
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
