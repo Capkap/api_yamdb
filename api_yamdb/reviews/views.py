@@ -1,7 +1,10 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
-from .models import Review, Comment
-from api.serializers import ReviewSerializer, CommentSerializer
+
 from users.permissions import AuthorModeratorAdminOrSafeMethodOnly
+from api.serializers import ReviewSerializer, CommentSerializer
+from .models import Review, Comment
+from titles.models import Title
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -9,13 +12,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = (AuthorModeratorAdminOrSafeMethodOnly,)
 
     def get_queryset(self):
-        title_id = self.kwargs.get('title_id')
-        return Review.objects.filter(title_id=title_id)
-
+        return Review.objects.select_related('author').filter(title_id=self.kwargs['title_id'])
+    
     def perform_create(self, serializer):
+        title = get_object_or_404(Title, id=self.kwargs['title_id'])
         serializer.save(
             author=self.request.user,
-            title_id=self.kwargs.get('title_id')
+            title=title
         )
 
 
@@ -24,15 +27,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = (AuthorModeratorAdminOrSafeMethodOnly,)
 
     def get_queryset(self):
-        title_id = self.kwargs.get('title_id')
-        review_id = self.kwargs.get('review_id')
-        return Comment.objects.filter(
-            review_id=review_id,
-            review__title_id=title_id
-        )
+        return Comment.objects.select_related('author', 'review').filter(
+            review_id=self.kwargs['review_id'])
 
     def perform_create(self, serializer):
+        review = get_object_or_404(Review, id=self.kwargs['review_id'])
         serializer.save(
             author=self.request.user,
-            review_id=self.kwargs.get('review_id')
+            review=review
         )

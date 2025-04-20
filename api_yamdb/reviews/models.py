@@ -8,6 +8,7 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
+        related_name='reviews',
         verbose_name='Объект отзыва'
     )
     text = models.TextField(
@@ -37,6 +38,12 @@ class Review(models.Model):
     )
 
     class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'],
+                name='unique_review_per_author'
+            )
+        ]
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
         ordering = ('-pub_date',)
@@ -44,23 +51,12 @@ class Review(models.Model):
     def __str__(self):
         return f'Отзыв {self.id} от {self.author.username}'
 
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self.author = kwargs.pop('author', None)
-        super().save(*args, **kwargs)
-
-    @property
-    def author_username(self):
-        return self.author.username
-
 
 class Comment(models.Model):
     review = models.ForeignKey(
         Review,
         related_name='comments',
-        on_delete=models.CASCADE,
-        blank=False,
-        null=False
+        on_delete=models.CASCADE
     )
     text = models.TextField(
         verbose_name='Текст комментария',
@@ -86,4 +82,4 @@ class Comment(models.Model):
         ordering = ('-pub_date',)
 
     def __str__(self):
-        return self.text[:50]
+        return self.text[:50] + '...' if len(self.text) > 50 else self.text
