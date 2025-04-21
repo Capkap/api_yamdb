@@ -8,24 +8,23 @@ from api.views import CreateListDestroyViewSet
 from api.serializers import (CategorySerializer, GenreSerializer,
                              TitleSerializer, TitleGETSerializer)
 
+from users.permissions import IsAdminOrReadOnly
+
 
 class CategoryViewSet(CreateListDestroyViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [AllowAny]
 
 
 class GenreViewSet(CreateListDestroyViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = [AllowAny]
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     # todo исправить, когда будет добавлена модель review
     queryset = Title.objects.annotate(rating=Avg('year'))
-    # todo включить пермишены
-    permission_classes = [AllowAny]
+    permission_classes = (IsAdminOrReadOnly,)
     pagination_class = pagination.LimitOffsetPagination
     filterset_class = TitleFilter
     filterset_fields = ('name',)

@@ -1,13 +1,14 @@
 from rest_framework import pagination, viewsets, mixins
 from rest_framework.filters import SearchFilter
 
+from users.permissions import IsAdminOrReadOnly
+
 
 class CreateListDestroyViewSet(mixins.CreateModelMixin,
                                mixins.ListModelMixin,
                                mixins.DestroyModelMixin,
                                viewsets.GenericViewSet):
-    # todo включить пермишены
-    # permission_classes = ()
+    permission_classes = (IsAdminOrReadOnly,)
     pagination_class = pagination.LimitOffsetPagination
     filter_backends = (SearchFilter,)
     search_fields = ('name',)
