@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 import datetime as dt
 import re
 
@@ -9,19 +10,22 @@ from titles.models import Category, Genre, Title
 
 
 class ReviewSerializer(serializers.ModelSerializer):
+    """Сериализации объектов модели Review."""
     author = serializers.CharField(source='author.username', read_only=True)
     pub_date = serializers.DateTimeField(read_only=True)
     score = serializers.IntegerField(
         validators=[
-            serializers.MinValueValidator(1),
-            serializers.MaxValueValidator(10)
+            MinValueValidator(1),
+            MaxValueValidator(10)
         ],
-        error_messages={'validators': 'Оценка должна быть от 1 до 10'}
+        error_messages={
+            'min_value': 'Минимальная оценка 1',
+            'max_value': 'Максимальная оценка 10'
+        }
     )
     title = serializers.IntegerField(source='title.id')
 
     def validate(self, attrs):
-        # Проверка на уникальность отзыва
         if self.context['request'].method == 'POST':
             title_id = attrs['title']
             user = self.context['request'].user
@@ -37,6 +41,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """Сериализации вложенных комментариев к отзыву."""
     author = serializers.CharField(source='author.username', read_only=True)
     review = serializers.IntegerField(source='review.id')
 
@@ -71,6 +76,7 @@ class SignUpSerializer(serializers.Serializer):
 
 
 class TokenSerializer(serializers.Serializer):
+    """Сериализатор для получения JWT-токена."""
     username = serializers.CharField(required=True)
     confirmation_code = serializers.CharField(required=True)
 

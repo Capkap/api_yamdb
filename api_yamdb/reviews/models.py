@@ -5,6 +5,7 @@ from titles.models import Title
 
 
 class Review(models.Model):
+    """Модель для хранения отзывов на произведения."""
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -19,10 +20,7 @@ class Review(models.Model):
     )
     score = models.IntegerField(
         verbose_name='Оценка',
-        validators=[
-            MinValueValidator(1),
-            MaxValueValidator(10)
-        ],
+        validators=[MinValueValidator(1), MaxValueValidator(10)],
         help_text='Оценка от 1 до 10'
     )
     author = models.ForeignKey(
@@ -53,6 +51,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
+    """Модель для комментариев к отзывам."""
     review = models.ForeignKey(
         Review,
         related_name='comments',

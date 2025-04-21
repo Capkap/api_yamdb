@@ -5,6 +5,3 @@ class ReviewsConfig(AppConfig):
     name = 'reviews'
     verbose_name = 'Отзыв'
     verbose_name_plural = 'Отзывы'
-
-    def ready(self):
-        from . import signals
