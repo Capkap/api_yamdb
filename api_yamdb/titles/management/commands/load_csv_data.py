@@ -4,6 +4,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from titles.models import GenreTitle, Category, Genre, Title
+from reviews.models import Review, Comment
 from users.models import User
 
 DATA_PATH = f'{settings.BASE_DIR}/static/data'
@@ -14,8 +15,8 @@ MODELS_AND_CSV_FILES = {
     Genre: 'genre.csv',
     Title: 'titles.csv',
     GenreTitle: 'genre_title.csv',
-    # Review: 'review.csv',
-    # Comment: 'comments.csv',
+    Review: 'review.csv',
+    Comment: 'comments.csv',
 }
 
 
@@ -37,22 +38,21 @@ class Command(BaseCommand):
                         year=row['year'],
                         category=Category.objects.get(id=row['category'])
                     ) for row in reader]
-                # todo раскомментировать, когда добавим модели review и comment
-                # elif csv_file_name == 'review.csv':
-                #     data = [Review(
-                #         id=row['id'],
-                #         title=Title.objects.get(id=row['title_id']),
-                #         author=User.objects.get(id=row['author']),
-                #         text=row['text'],
-                #         score=row['score']
-                #     ) for row in reader]
-                # elif csv_file_name == 'comments.csv':
-                #     data = [Comment(
-                #         id=row['id'],
-                #         review=Review.objects.get(id=row['review_id']),
-                #         author=User.objects.get(id=row['author']),
-                #         text=row['text']
-                #     ) for row in reader]
+                elif csv_file_name == 'review.csv':
+                    data = [Review(
+                        id=row['id'],
+                        title=Title.objects.get(id=row['title_id']),
+                        author=User.objects.get(id=row['author']),
+                        text=row['text'],
+                        score=row['score']
+                    ) for row in reader]
+                elif csv_file_name == 'comments.csv':
+                    data = [Comment(
+                        id=row['id'],
+                        review=Review.objects.get(id=row['review_id']),
+                        author=User.objects.get(id=row['author']),
+                        text=row['text']
+                    ) for row in reader]
                 else:
                     data = [model(**row) for row in reader]
                 model.objects.bulk_create(data)

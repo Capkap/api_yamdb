@@ -22,8 +22,7 @@ class GenreViewSet(CreateListDestroyViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    # todo исправить, когда будет добавлена модель review
-    queryset = Title.objects.annotate(rating=Avg('year'))
+    queryset = Title.objects.annotate(rating=Avg('reviews__score'))
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = pagination.LimitOffsetPagination
     filterset_class = TitleFilter
