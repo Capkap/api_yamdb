@@ -50,10 +50,6 @@ source venv/bin/activate — для Mac и Linux.
 ````
 — pip install -r requirements.txt — для Windows, Mac и Linux.
 ````
-Для работы с JWT в Django установите и подключите две библиотеки Djoser и Simple JWT:
-````
-— pip install djoser djangorestframework-simplejwt==4.7.2 
-````
 Чтобы запустить проект локально, используйте команду в терминале:
 ````
 — python manage.py runserver — для Windows, Mac и Linux.
