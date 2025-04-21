@@ -1,12 +1,53 @@
+from rest_framework import serializers
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator, MaxValueValidator
 import datetime as dt
 import re
 
-from rest_framework import serializers
-from django.core.exceptions import ValidationError
-from rest_framework import serializers
-
-from titles.models import Category, Genre, Title
+from reviews.models import Review, Comment
 from users.models import User
+from titles.models import Category, Genre, Title
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+    """Сериализации объектов модели Review."""
+    author = serializers.CharField(source='author.username', read_only=True)
+    pub_date = serializers.DateTimeField(read_only=True)
+    score = serializers.IntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(10)
+        ],
+        error_messages={
+            'min_value': 'Минимальная оценка 1',
+            'max_value': 'Максимальная оценка 10'
+        }
+    )
+    title = serializers.IntegerField(source='title.id')
+
+    def validate(self, attrs):
+        if self.context['request'].method == 'POST':
+            title_id = attrs['title']
+            user = self.context['request'].user
+            if Review.objects.filter(title_id=title_id, author=user).exists():
+                raise serializers.ValidationError(
+                    'Вы уже оставили отзыв на это произведение'
+                )
+        return attrs
+
+    class Meta:
+        model = Review
+        fields = ('id', 'title', 'text', 'score', 'author', 'pub_date')
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    """Сериализации вложенных комментариев к отзыву."""
+    author = serializers.CharField(source='author.username', read_only=True)
+    review = serializers.IntegerField(source='review.id')
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'review', 'text', 'author')
 
 
 class SignUpSerializer(serializers.Serializer):
@@ -35,6 +76,7 @@ class SignUpSerializer(serializers.Serializer):
 
 
 class TokenSerializer(serializers.Serializer):
+    """Сериализатор для получения JWT-токена."""
     username = serializers.CharField(required=True)
     confirmation_code = serializers.CharField(required=True)
 
