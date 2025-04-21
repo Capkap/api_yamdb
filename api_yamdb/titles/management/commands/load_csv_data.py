@@ -3,12 +3,13 @@ import csv
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from titles.models import GenreTitle, Category, Genre, User, Title
+from titles.models import GenreTitle, Category, Genre, Title
+from users.models import User
 
 DATA_PATH = f'{settings.BASE_DIR}/static/data'
 
 MODELS_AND_CSV_FILES = {
-    # User: 'users.csv',
+    User: 'users.csv',
     Category: 'category.csv',
     Genre: 'genre.csv',
     Title: 'titles.csv',

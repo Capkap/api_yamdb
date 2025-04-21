@@ -2,7 +2,6 @@ from http import HTTPStatus
 
 from django.core.mail import send_mail
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from rest_framework import views
 from rest_framework.permissions import AllowAny
@@ -10,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 
 from users.models import User
-from users.serializers import SignUpSerializer, TokenSerializer
+from api.serializers import SignUpSerializer, TokenSerializer
 
 
 class SignUpView(views.APIView):
