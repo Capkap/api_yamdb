@@ -1,9 +1,7 @@
 import datetime as dt
-import re
 
 from rest_framework import serializers
-from django.core.exceptions import ValidationError
-from rest_framework import serializers
+from django.core.validators import RegexValidator
 
 from titles.models import Category, Genre, Title
 from users.models import User
@@ -11,45 +9,58 @@ from users.models import User
 
 class SignUpSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True, max_length=254)
-    username = serializers.CharField(required=True, max_length=150)
+    username = serializers.CharField(
+        required=True,
+        max_length=150,
+        validators=[RegexValidator(
+            regex=r'^[\w.@+-]+\Z',
+            message='Недопустимые символы в username!'
+        )]
+    )
 
     def validate_username(self, value):
         if value.lower() == 'me':
-            raise ValidationError("Нельзя использовать 'me' как username!")
-
-        if not re.match(r'^[\w.@+-]+\Z', value):
-            raise ValidationError("В username есть допустимые символы!")
-
+            raise serializers.ValidationError(
+                "Нельзя использовать 'me' как username!"
+            )
         return value
 
     def validate(self, data):
-        if User.objects.filter(email=data['email']).exists():
-            raise ValidationError(
-                {'email': 'Email уже используется для другого аккаунта!'}
-            )
-
-        if User.objects.filter(username=data['username']).exists():
-            raise ValidationError({'username': 'Такой username уже занят!'})
-
+        existing_user = User.objects.filter(email=data['email']).first()
+        if existing_user and existing_user.username != data['username']:
+            raise serializers.ValidationError({
+                'email': 'Этот email принадлежит другому пользователю'
+            })
         return data
 
 
 class TokenSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True)
+    username = serializers.CharField(required=True, max_length=150)
     confirmation_code = serializers.CharField(required=True)
 
-    def validate(self, data):
-        try:
-            user = User.objects.get(username=data['username'])
-        except User.DoesNotExist:
-            raise ValidationError({'username': 'Пользователь не найден!'})
 
-        if user.confirmation_code != data['confirmation_code']:
-            raise ValidationError(
-                {'confirmation_code': 'Неверный код подтверждения!'}
-            )
+class UserSerializer(serializers.ModelSerializer):
+    role = serializers.ChoiceField(
+        choices=User.ROLE_CHOICES,
+        required=False,
+        default=User.USER
+    )
 
-        return data
+    class Meta:
+        model = User
+        fields = (
+            'username', 'email', 'first_name',
+            'last_name', 'bio', 'role'
+        )
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'email': {'required': True}
+        }
+
+    def validate_role(self, value):
+        if value not in dict(User.ROLE_CHOICES):
+            raise serializers.ValidationError("Недопустимая роль")
+        return value
 
 
 class CategorySerializer(serializers.ModelSerializer):
