@@ -1,6 +1,7 @@
 from rest_framework import pagination, viewsets
 from rest_framework.permissions import AllowAny
 from django.db.models import Avg
+from django.http import HttpResponseNotAllowed
 
 from .filters import TitleFilter
 from .models import Category, Genre, Title
@@ -28,6 +29,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
     filterset_fields = ('name',)
     ordering = ('name',)
+    http_method_names = ('get', 'post', 'patch', 'delete')
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
