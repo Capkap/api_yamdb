@@ -1,7 +1,5 @@
 from rest_framework import pagination, viewsets
-from rest_framework.permissions import AllowAny
 from django.db.models import Avg
-from django.http import HttpResponseNotAllowed
 
 from .filters import TitleFilter
 from .models import Category, Genre, Title

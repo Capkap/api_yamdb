@@ -35,8 +35,13 @@ class ReviewSerializer(serializers.ModelSerializer):
         title_id = self.context['title_id']
 
         if request.method == 'POST':
-            if Review.objects.filter(author=request.user, title_id=title_id).exists():
-                raise serializers.ValidationError('Вы уже оставили отзыв на это произведение.')
+            if Review.objects.filter(
+                    author=request.user,
+                    title_id=title_id
+            ).exists():
+                raise serializers.ValidationError(
+                    'Вы уже оставили отзыв на это произведение.'
+                )
         return data
 
     class Meta:
