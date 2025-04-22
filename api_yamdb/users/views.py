@@ -36,7 +36,7 @@ class SignUpView(views.APIView):
             )
         if existing_email_user or existing_username_user:
             user = existing_email_user or existing_username_user
-            user.confirmation_code = secrets.token_hex(6)
+            user.confirmation_code = user.generate_confirmation_code()
             user.save()
         else:
             user = User.objects.create(
