@@ -1,10 +1,10 @@
 import datetime as dt
-
 from rest_framework import serializers
-from django.core.validators import RegexValidator
-
-from django.core.validators import MinValueValidator, MaxValueValidator
-
+from django.core.validators import (
+    RegexValidator,
+    MinValueValidator,
+    MaxValueValidator
+)
 
 from reviews.models import Review, Comment
 from users.models import User
@@ -14,6 +14,10 @@ from titles.models import Category, Genre, Title
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализации объектов модели Review."""
     author = serializers.CharField(source='author.username', read_only=True)
+    title = serializers.HiddenField(  
+        default=serializers.CurrentUserDefault(),
+        write_only=True
+    )
     pub_date = serializers.DateTimeField(read_only=True)
     score = serializers.IntegerField(
         validators=[
@@ -25,31 +29,33 @@ class ReviewSerializer(serializers.ModelSerializer):
             'max_value': 'Максимальная оценка 10'
         }
     )
-    title = serializers.IntegerField(source='title.id')
-
-    def validate(self, attrs):
-        if self.context['request'].method == 'POST':
-            title_id = attrs['title']
-            user = self.context['request'].user
-            if Review.objects.filter(title_id=title_id, author=user).exists():
-                raise serializers.ValidationError(
-                    'Вы уже оставили отзыв на это произведение'
-                )
-        return attrs
 
     class Meta:
         model = Review
-        fields = ('id', 'title', 'text', 'score', 'author', 'pub_date')
+        fields = '__all__'
 
 
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализации вложенных комментариев к отзыву."""
     author = serializers.CharField(source='author.username', read_only=True)
-    review = serializers.IntegerField(source='review.id')
 
     class Meta:
         model = Comment
-        fields = ('id', 'review', 'text', 'author')
+        fields = '__all__'
+        read_only_fields = ('review',)
+
+    def validate(self, attrs):
+        if self.context['request'].method == 'POST':
+            review_id = self.context.get('review_id')
+            user = self.context['request'].user
+            if Comment.objects.filter(
+                review_id=review_id,
+                author=user
+            ).exists():
+                raise serializers.ValidationError(
+                    'Вы уже оставили комментарий к этому отзыву'
+                )
+        return attrs
 
 
 class SignUpSerializer(serializers.Serializer):
