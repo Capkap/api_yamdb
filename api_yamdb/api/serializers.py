@@ -14,7 +14,7 @@ from titles.models import Category, Genre, Title
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализации объектов модели Review."""
     author = serializers.CharField(source='author.username', read_only=True)
-    title = serializers.HiddenField(  
+    title = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
         write_only=True
     )
@@ -29,6 +29,20 @@ class ReviewSerializer(serializers.ModelSerializer):
             'max_value': 'Максимальная оценка 10'
         }
     )
+
+    def validate(self, data):
+        request = self.context['request']
+        title_id = self.context['title_id']
+
+        if request.method == 'POST':
+            if Review.objects.filter(
+                    author=request.user,
+                    title_id=title_id
+            ).exists():
+                raise serializers.ValidationError(
+                    'Вы уже оставили отзыв на это произведение.'
+                )
+        return data
 
     class Meta:
         model = Review
@@ -49,8 +63,8 @@ class CommentSerializer(serializers.ModelSerializer):
             review_id = self.context.get('review_id')
             user = self.context['request'].user
             if Comment.objects.filter(
-                review_id=review_id,
-                author=user
+                    review_id=review_id,
+                    author=user
             ).exists():
                 raise serializers.ValidationError(
                     'Вы уже оставили комментарий к этому отзыву'
