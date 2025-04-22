@@ -55,8 +55,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = '__all__'
-        read_only_fields = ('review',)
+        exclude = ('review',)
 
     def validate(self, attrs):
         if self.context['request'].method == 'POST':
