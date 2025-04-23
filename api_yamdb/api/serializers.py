@@ -1,8 +1,8 @@
-import datetime as dt
-
 from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     RegexValidator)
 from rest_framework import serializers
+
+from titles.validators import validate_year
 from reviews.models import Comment, Review
 from titles.models import Category, Genre, Title
 from users.models import User
@@ -141,7 +141,7 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleGETSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
-    rating = serializers.IntegerField(default=0)
+    rating = serializers.IntegerField(default=1)
 
     class Meta:
         model = Title
@@ -173,6 +173,7 @@ class TitleSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Category.objects.all()
     )
+    year = serializers.IntegerField(validators=[validate_year])
 
     class Meta:
         model = Title
@@ -183,13 +184,6 @@ class TitleSerializer(serializers.ModelSerializer):
             'genre',
             'category'
         )
-
-    def validate_year(self, value):
-        if value > dt.date.today().year:
-            raise serializers.ValidationError(
-                'Год произведения не может быть больше текущего.'
-            )
-        return value
 
     def to_representation(self, title):
         return TitleGETSerializer(title).data

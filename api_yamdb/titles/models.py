@@ -1,63 +1,44 @@
 from django.db import models
-from django.core.validators import RegexValidator
+
+from api_yamdb import constants
+from titles.validators import validate_year
 
 
-class Category(models.Model):
-    name = models.CharField(
-        max_length=256,
-        verbose_name='Название',
-        db_index=True
-    )
-    slug = models.SlugField(
-        max_length=50,
-        verbose_name='slug',
-        unique=True,
-        validators=[RegexValidator(
-            regex=r'^[-a-zA-Z0-9_]+$',
-            message='Слаг категории содержит недопустимый символ'
-        )]
-    )
+class AbstractModelGenreCategory(models.Model):
+    name = models.CharField(verbose_name='Название',
+                            max_length=constants.LIMIT_MODEL_NAME)
+    slug = models.SlugField(verbose_name='slug', unique=True)
 
     class Meta:
+        abstract = True
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name
+
+
+class Category(AbstractModelGenreCategory):
+    class Meta(AbstractModelGenreCategory.Meta):
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
 
-    def __str__(self):
-        return self.name
 
-
-class Genre(models.Model):
-    name = models.CharField(
-        max_length=256,
-        verbose_name='Название',
-        db_index=True
-    )
-    slug = models.SlugField(
-        max_length=50,
-        verbose_name='slug',
-        unique=True,
-        validators=[RegexValidator(
-            regex=r'^[-a-zA-Z0-9_]+$',
-            message='Слаг жанра содержит недопустимый символ'
-        )]
-    )
-
-    class Meta:
+class Genre(AbstractModelGenreCategory):
+    class Meta(AbstractModelGenreCategory.Meta):
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
-
-    def __str__(self):
-        return self.name
 
 
 class Title(models.Model):
     name = models.CharField(
-        max_length=256,
+        max_length=constants.LIMIT_MODEL_NAME,
         verbose_name='Название',
         db_index=True
     )
-    year = models.PositiveIntegerField(
+    year = models.IntegerField(
         verbose_name='Год выпуска',
+        db_index=True,
+        validators=[validate_year]
     )
     description = models.TextField(
         verbose_name='Описание',

@@ -1,7 +1,6 @@
 import secrets
 from http import HTTPStatus
 
-from api.serializers import SignUpSerializer, TokenSerializer, UserSerializer
 from django.conf import settings
 from django.core.mail import send_mail
 from rest_framework import status, views, viewsets
@@ -9,6 +8,8 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
+
+from api.serializers import SignUpSerializer, TokenSerializer, UserSerializer
 from users.models import User
 from users.permissions import IsAdmin
 
