@@ -1,14 +1,11 @@
 import datetime as dt
-from rest_framework import serializers
-from django.core.validators import (
-    RegexValidator,
-    MinValueValidator,
-    MaxValueValidator
-)
 
-from reviews.models import Review, Comment
-from users.models import User
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    RegexValidator)
+from rest_framework import serializers
+from reviews.models import Comment, Review
 from titles.models import Category, Genre, Title
+from users.models import User
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -187,14 +184,12 @@ class TitleSerializer(serializers.ModelSerializer):
             'category'
         )
 
-    @staticmethod
-    def validate_year(value):
+    def validate_year(self, value):
         if value > dt.date.today().year:
             raise serializers.ValidationError(
                 'Год произведения не может быть больше текущего.'
             )
         return value
 
-    @staticmethod
-    def to_representation(title):
+    def to_representation(self, title):
         return TitleGETSerializer(title).data

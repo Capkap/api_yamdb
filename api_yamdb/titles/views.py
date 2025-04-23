@@ -1,13 +1,12 @@
-from rest_framework import pagination, viewsets
+from api.serializers import (CategorySerializer, GenreSerializer,
+                             TitleGETSerializer, TitleSerializer)
+from api.views import CreateListDestroyViewSet
 from django.db.models import Avg
+from rest_framework import pagination, viewsets
+from users.permissions import IsAdminOrReadOnly
 
 from .filters import TitleFilter
 from .models import Category, Genre, Title
-from api.views import CreateListDestroyViewSet
-from api.serializers import (CategorySerializer, GenreSerializer,
-                             TitleSerializer, TitleGETSerializer)
-
-from users.permissions import IsAdminOrReadOnly
 
 
 class CategoryViewSet(CreateListDestroyViewSet):

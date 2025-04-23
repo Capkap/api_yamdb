@@ -1,6 +1,5 @@
-from rest_framework import pagination, viewsets, mixins
+from rest_framework import mixins, pagination, viewsets
 from rest_framework.filters import SearchFilter
-
 from users.permissions import IsAdminOrReadOnly
 
 

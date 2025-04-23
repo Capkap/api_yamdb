@@ -2,9 +2,8 @@ import csv
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-
-from titles.models import GenreTitle, Category, Genre, Title
-from reviews.models import Review, Comment
+from reviews.models import Comment, Review
+from titles.models import Category, Genre, GenreTitle, Title
 from users.models import User
 
 DATA_PATH = f'{settings.BASE_DIR}/static/data'
