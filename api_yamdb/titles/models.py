@@ -1,7 +1,7 @@
 from django.db import models
 
+from api.validators import validate_year
 from api_yamdb import constants
-from titles.validators import validate_year
 
 
 class AbstractModelGenreCategory(models.Model):

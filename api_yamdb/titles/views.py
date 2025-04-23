@@ -1,12 +1,12 @@
 from django.db.models import Avg
 from rest_framework import pagination, viewsets
 
+from api.filters import TitleFilter
 from api.serializers import (CategorySerializer, GenreSerializer,
                              TitleGETSerializer, TitleSerializer)
 from api.views import CreateListDestroyViewSet
 from users.permissions import IsAdminOrReadOnly
 
-from .filters import TitleFilter
 from .models import Category, Genre, Title
 
 

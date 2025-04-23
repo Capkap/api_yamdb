@@ -2,7 +2,8 @@ from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     RegexValidator)
 from rest_framework import serializers
 
-from titles.validators import validate_year
+from api_yamdb import constants
+from api.validators import validate_year
 from reviews.models import Comment, Review
 from titles.models import Category, Genre, Title
 from users.models import User
@@ -141,7 +142,7 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleGETSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
-    rating = serializers.IntegerField(default=1)
+    rating = serializers.IntegerField(default=constants.DEFAULT_RATING_VALUE)
 
     class Meta:
         model = Title
