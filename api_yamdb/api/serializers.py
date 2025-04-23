@@ -128,18 +128,24 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """Сериализатор объектов модели Category."""
+
     class Meta:
         model = Category
         exclude = ('id',)
 
 
 class GenreSerializer(serializers.ModelSerializer):
+    """Сериализатор объектов модели Genre."""
+
     class Meta:
         model = Genre
         exclude = ('id',)
 
 
 class TitleGETSerializer(serializers.ModelSerializer):
+    """Сериализатор объектов модели Title для GET запросов."""
+
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
     rating = serializers.IntegerField(default=constants.DEFAULT_RATING_VALUE)
@@ -163,6 +169,8 @@ class TitleGETSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
+    """Сериализатор объектов модели Title."""
+
     genre = serializers.SlugRelatedField(
         slug_field='slug',
         queryset=Genre.objects.all(),
