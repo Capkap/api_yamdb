@@ -1,13 +1,13 @@
-from rest_framework import pagination, viewsets
 from django.db.models import Avg
+from rest_framework import pagination, viewsets
 
-from .filters import TitleFilter
-from .models import Category, Genre, Title
-from api.views import CreateListDestroyViewSet
+from api.filters import TitleFilter
 from api.serializers import (CategorySerializer, GenreSerializer,
-                             TitleSerializer, TitleGETSerializer)
-
+                             TitleGETSerializer, TitleSerializer)
+from api.views import CreateListDestroyViewSet
 from users.permissions import IsAdminOrReadOnly
+
+from .models import Category, Genre, Title
 
 
 class CategoryViewSet(CreateListDestroyViewSet):
@@ -21,7 +21,8 @@ class GenreViewSet(CreateListDestroyViewSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(rating=Avg('reviews__score'))
+    queryset = Title.objects.annotate(rating=Avg('reviews__score')
+                                      ).order_by('-id')
     permission_classes = (IsAdminOrReadOnly,)
     pagination_class = pagination.LimitOffsetPagination
     filterset_class = TitleFilter

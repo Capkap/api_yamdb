@@ -1,14 +1,12 @@
-import datetime as dt
+from django.core.validators import (MaxValueValidator, MinValueValidator,
+                                    RegexValidator)
 from rest_framework import serializers
-from django.core.validators import (
-    RegexValidator,
-    MinValueValidator,
-    MaxValueValidator
-)
 
-from reviews.models import Review, Comment
-from users.models import User
+from api_yamdb import constants
+from api.validators import validate_year
+from reviews.models import Comment, Review
 from titles.models import Category, Genre, Title
+from users.models import User
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -130,21 +128,27 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """Сериализатор объектов модели Category."""
+
     class Meta:
         model = Category
         exclude = ('id',)
 
 
 class GenreSerializer(serializers.ModelSerializer):
+    """Сериализатор объектов модели Genre."""
+
     class Meta:
         model = Genre
         exclude = ('id',)
 
 
 class TitleGETSerializer(serializers.ModelSerializer):
+    """Сериализатор объектов модели Title для GET запросов."""
+
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
-    rating = serializers.IntegerField(default=0)
+    rating = serializers.IntegerField(default=constants.DEFAULT_RATING_VALUE)
 
     class Meta:
         model = Title
@@ -165,6 +169,8 @@ class TitleGETSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
+    """Сериализатор объектов модели Title."""
+
     genre = serializers.SlugRelatedField(
         slug_field='slug',
         queryset=Genre.objects.all(),
@@ -176,6 +182,7 @@ class TitleSerializer(serializers.ModelSerializer):
         slug_field='slug',
         queryset=Category.objects.all()
     )
+    year = serializers.IntegerField(validators=[validate_year])
 
     class Meta:
         model = Title
@@ -187,14 +194,5 @@ class TitleSerializer(serializers.ModelSerializer):
             'category'
         )
 
-    @staticmethod
-    def validate_year(value):
-        if value > dt.date.today().year:
-            raise serializers.ValidationError(
-                'Год произведения не может быть больше текущего.'
-            )
-        return value
-
-    @staticmethod
-    def to_representation(title):
+    def to_representation(self, title):
         return TitleGETSerializer(title).data
