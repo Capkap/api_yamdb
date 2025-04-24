@@ -1,8 +1,7 @@
-from django.core.validators import (MaxValueValidator, MinValueValidator,
-                                    RegexValidator)
+from django.core.validators import RegexValidator
 from rest_framework import serializers
 
-from api.validators import validate_year
+from api.validators import validate_score_range, validate_year
 from api_yamdb import constants
 from reviews.models import Comment, Review
 from titles.models import Category, Genre, Title
@@ -11,22 +10,23 @@ from users.models import User
 
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализации объектов модели Review."""
-    author = serializers.CharField(source='author.username', read_only=True)
+
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True,
+    )
     title = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
         write_only=True
     )
-    pub_date = serializers.DateTimeField(read_only=True)
     score = serializers.IntegerField(
-        validators=[
-            MinValueValidator(1),
-            MaxValueValidator(10)
-        ],
-        error_messages={
-            'min_value': 'Минимальная оценка 1',
-            'max_value': 'Максимальная оценка 10'
-        }
+        validators=[validate_score_range]
     )
+
+    class Meta:
+        model = Review
+        fields = ('id', 'title', 'text', 'author', 'score', 'pub_date')
+        read_only_fields = ('id', 'title', 'author', 'pub_date')
 
     def validate(self, data):
         request = self.context['request']
@@ -42,34 +42,23 @@ class ReviewSerializer(serializers.ModelSerializer):
                 )
         return data
 
-    class Meta:
-        model = Review
-        fields = '__all__'
-
 
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализации вложенных комментариев к отзыву."""
-    author = serializers.CharField(source='author.username', read_only=True)
+
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True,
+    )
 
     class Meta:
         model = Comment
         exclude = ('review',)
 
-    def validate(self, attrs):
-        if self.context['request'].method == 'POST':
-            review_id = self.context.get('review_id')
-            user = self.context['request'].user
-            if Comment.objects.filter(
-                    review_id=review_id,
-                    author=user
-            ).exists():
-                raise serializers.ValidationError(
-                    'Вы уже оставили комментарий к этому отзыву'
-                )
-        return attrs
-
 
 class SignUpSerializer(serializers.Serializer):
+    """Сериализатор для регистрации пользователя через email и username."""
+
     email = serializers.EmailField(required=True, max_length=254)
     username = serializers.CharField(
         required=True,
@@ -97,8 +86,9 @@ class SignUpSerializer(serializers.Serializer):
 
 
 class TokenSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True, max_length=150)
     """Сериализатор для получения JWT-токена."""
+
+    username = serializers.CharField(required=True, max_length=150)
     username = serializers.CharField(required=True)
     confirmation_code = serializers.CharField(required=True)
 
