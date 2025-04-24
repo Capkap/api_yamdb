@@ -1,8 +1,5 @@
 from http import HTTPStatus
 
-from django.conf import settings
-from django.core.mail import send_mail
-from django.contrib.auth.tokens import default_token_generator
 from rest_framework import views, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
