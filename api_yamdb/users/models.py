@@ -1,7 +1,10 @@
 import secrets
 
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.tokens import default_token_generator
 from django.db import models
+
+from api_yamdb.constants import LIMIT_EMAIL
 
 
 class User(AbstractUser):
@@ -15,20 +18,26 @@ class User(AbstractUser):
         (ADMIN, 'Admin'),
     ]
 
-    email = models.EmailField(unique=True, max_length=254)
-    bio = models.TextField(blank=True)
+    email = models.EmailField(
+        unique=True,
+        max_length=LIMIT_EMAIL,
+        verbose_name='Адрес электронной почты'
+    )
+    bio = models.TextField(
+        blank=True,
+        verbose_name='О себе'
+    )
     role = models.CharField(
         max_length=20,
         choices=ROLE_CHOICES,
         default=USER,
-    )
-    confirmation_code = models.CharField(
-        max_length=32,
-        blank=True,
+        verbose_name='Роль'
     )
 
     class Meta:
-        ordering = ['id']
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+        ordering = ['username']
 
     @property
     def is_admin(self):
@@ -39,7 +48,4 @@ class User(AbstractUser):
         return self.role == self.MODERATOR
 
     def generate_confirmation_code(self):
-        code = secrets.token_hex(6)
-        self.confirmation_code = code
-        self.save()
-        return code
+        return default_token_generator.make_token(self)

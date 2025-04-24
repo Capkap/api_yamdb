@@ -1,9 +1,13 @@
 from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     RegexValidator)
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from api.validators import validate_year
 from api_yamdb import constants
+from django.conf import settings
 from reviews.models import Comment, Review
 from titles.models import Category, Genre, Title
 from users.models import User
@@ -70,37 +74,69 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class SignUpSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True, max_length=254)
+    email = serializers.EmailField(required=True, max_length=constants.LIMIT_EMAIL)
     username = serializers.CharField(
         required=True,
         max_length=150,
         validators=[RegexValidator(
-            regex=r'^[\w.@+-]+\Z',
+            regex=constants.USERNAME_REGEX,
             message='Недопустимые символы в username!'
         )]
     )
 
     def validate_username(self, value):
-        if value.lower() == 'me':
+        if value == constants.UNAVAILABLE_USERNAME:
             raise serializers.ValidationError(
-                "Нельзя использовать 'me' как username!"
+                f"Нельзя использовать {constants.UNAVAILABLE_USERNAME} как username!"
             )
         return value
 
     def validate(self, data):
-        existing_user = User.objects.filter(email=data['email']).first()
-        if existing_user and existing_user.username != data['username']:
+        email = data['email']
+        username = data['username']
+        email_owner = User.objects.filter(email=email).first()
+        username_owner = User.objects.filter(username=username).first()
+
+        if email_owner and email_owner.username != username:
             raise serializers.ValidationError({
-                'email': 'Этот email принадлежит другому пользователю'
+                'email': 'Этот email уже используется для другого аккаунта!'
+            })
+        if username_owner and username_owner.email != email:
+            raise serializers.ValidationError({
+                'username': 'Этот username уже занят другим пользователем!'
             })
         return data
+
+    def create(self, validated_data):
+        user, _ = User.objects.get_or_create(**validated_data)
+        confirmation_code = default_token_generator.make_token(user)
+
+        send_mail(
+            subject='Ваш код подтверждения YAmdb!',
+            message=f'Ваш код подтверждения: {confirmation_code}',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[validated_data['email']],
+            fail_silently=False,
+        )
+        return user
 
 
 class TokenSerializer(serializers.Serializer):
     username = serializers.CharField(required=True, max_length=150)
-    """Сериализатор для получения JWT-токена."""
-    username = serializers.CharField(required=True)
     confirmation_code = serializers.CharField(required=True)
+
+    def validate(self, data):
+        username = data.get('username')
+        confirmation_code = data.get('confirmation_code')
+        user = get_object_or_404(User, username=username)
+
+        if not default_token_generator.check_token(user, confirmation_code):
+            raise serializers.ValidationError(
+                {'confirmation_code': 'Неверный код подтверждения!'}
+            )
+
+        data['user'] = user
+        return data
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -117,8 +153,7 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name', 'bio', 'role'
         )
         extra_kwargs = {
-            'password': {'write_only': True},
-            'email': {'required': True}
+            'email': {'required': True},
         }
 
     def validate_role(self, value):
