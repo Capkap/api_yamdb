@@ -117,6 +117,10 @@ class TokenSerializer(serializers.Serializer):
     username = serializers.CharField(
         required=True, max_length=constants.LIMIT_USERNAME
     )
+<<<<<<< Updated upstream
+=======
+    confirmation_code = serializers.CharField(required=True)
+>>>>>>> Stashed changes
 
     def validate(self, data):
         username = data.get('username')
