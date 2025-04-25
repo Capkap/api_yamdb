@@ -35,7 +35,7 @@ class Title(models.Model):
         verbose_name='Название',
         db_index=True
     )
-    year = models.IntegerField(
+    year = models.SmallIntegerField(
         verbose_name='Год выпуска',
         db_index=True,
         validators=[validate_year]
