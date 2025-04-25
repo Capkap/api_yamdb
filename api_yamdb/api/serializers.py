@@ -61,7 +61,9 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class SignUpSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True, max_length=constants.LIMIT_EMAIL)
+    email = serializers.EmailField(
+        required=True, max_length=constants.LIMIT_EMAIL
+    )
     username = serializers.CharField(
         required=True,
         max_length=150,
@@ -74,7 +76,7 @@ class SignUpSerializer(serializers.Serializer):
     def validate_username(self, value):
         if value == constants.UNAVAILABLE_USERNAME:
             raise serializers.ValidationError(
-                f"Нельзя использовать {constants.UNAVAILABLE_USERNAME} как username!"
+                f"Нельзя использовать {value} как username!"
             )
         return value
 
@@ -95,8 +97,10 @@ class SignUpSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
-        user, _ = User.objects.get_or_create(**validated_data)
+        user, created = User.objects.get_or_create(**validated_data)
         confirmation_code = default_token_generator.make_token(user)
+        if created and not user.pk:
+            user.save()
 
         send_mail(
             subject='Ваш код подтверждения YAmdb!',
@@ -109,8 +113,9 @@ class SignUpSerializer(serializers.Serializer):
 
 
 class TokenSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True, constants.LIMIT_USERNAME)
-    confirmation_code = serializers.CharField(required=True)
+    username = serializers.CharField(
+        required=True, max_length=constants.LIMIT_USERNAME
+    )
 
     def validate(self, data):
         username = data.get('username')
