@@ -1,12 +1,12 @@
-from django.core.validators import RegexValidator
+from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.core.validators import RegexValidator
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from api.validators import validate_score_range, validate_year
 from api_yamdb import constants
-from django.conf import settings
 from reviews.models import Comment, Review
 from titles.models import Category, Genre, Title
 from users.models import User

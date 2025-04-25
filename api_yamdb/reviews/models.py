@@ -1,9 +1,9 @@
 from django.db import models
 
 from api.validators import validate_score_range
+from api_yamdb import constants
 from titles.models import Title
 from users.models import User
-from api_yamdb import constants
 
 
 class AbstractReviewComment(models.Model):
