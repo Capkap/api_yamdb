@@ -62,7 +62,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class SignUpSerializer(serializers.Serializer):
     email = serializers.EmailField(
-        required=True, max_length=constants.LIMIT_EMAIL
+        required=True,
+        max_length=constants.LIMIT_EMAIL
     )
     username = serializers.CharField(
         required=True,
@@ -116,6 +117,7 @@ class TokenSerializer(serializers.Serializer):
     username = serializers.CharField(
         required=True, max_length=constants.LIMIT_USERNAME
     )
+    confirmation_code = serializers.CharField(required=True)
 
     def validate(self, data):
         username = data.get('username')
