@@ -77,7 +77,12 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class SignUpSerializer(serializers.Serializer):
     email = serializers.EmailField(
+<<<<<<< Updated upstream
         required=True, max_length=constants.LIMIT_EMAIL
+=======
+        required=True,
+        max_length=constants.LIMIT_EMAIL
+>>>>>>> Stashed changes
     )
     username = serializers.CharField(
         required=True,
