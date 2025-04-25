@@ -15,6 +15,7 @@ from users.models import User
 
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализации объектов модели Review."""
+
     author = serializers.CharField(source='author.username', read_only=True)
     title = serializers.HiddenField(
         default=serializers.CurrentUserDefault(),
@@ -53,6 +54,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализации вложенных комментариев к отзыву."""
+
     author = serializers.CharField(source='author.username', read_only=True)
 
     class Meta:
@@ -74,7 +76,9 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class SignUpSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True, max_length=constants.LIMIT_EMAIL)
+    email = serializers.EmailField(
+        required=True, max_length=constants.LIMIT_EMAIL
+    )
     username = serializers.CharField(
         required=True,
         max_length=150,
@@ -87,7 +91,7 @@ class SignUpSerializer(serializers.Serializer):
     def validate_username(self, value):
         if value == constants.UNAVAILABLE_USERNAME:
             raise serializers.ValidationError(
-                f"Нельзя использовать {constants.UNAVAILABLE_USERNAME} как username!"
+                f"Нельзя использовать {value} как username!"
             )
         return value
 
@@ -124,7 +128,9 @@ class SignUpSerializer(serializers.Serializer):
 
 
 class TokenSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True, max_length=constants.LIMIT_USERNAME)
+    username = serializers.CharField(
+        required=True, max_length=constants.LIMIT_USERNAME
+    )
     confirmation_code = serializers.CharField(required=True)
 
     def validate(self, data):
