@@ -1,9 +1,9 @@
 from django.db import models
 
 from api.validators import validate_score_range
+from api_yamdb import constants
 from titles.models import Title
 from users.models import User
-from api_yamdb import constants
 
 
 class AbstractReviewComment(models.Model):
@@ -11,9 +11,7 @@ class AbstractReviewComment(models.Model):
 
     text = models.TextField(
         verbose_name='Текст',
-        help_text='Основной текст',
-        blank=False,
-        null=False
+        help_text='Основной текст'
     )
     author = models.ForeignKey(
         User,
@@ -77,11 +75,5 @@ class Comment(AbstractReviewComment):
     )
 
     class Meta(AbstractReviewComment.Meta):
-        constraints = [
-            models.UniqueConstraint(
-                fields=['author', 'review'],
-                name='unique_author_review'
-            )
-        ]
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
