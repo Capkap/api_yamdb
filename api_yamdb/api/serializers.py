@@ -19,22 +19,18 @@ class ReviewSerializer(serializers.ModelSerializer):
         slug_field='username',
         read_only=True,
     )
-    title = serializers.HiddenField(
-        default=serializers.CurrentUserDefault(),
-        write_only=True
-    )
     score = serializers.IntegerField(
         validators=[validate_score_range]
     )
 
     class Meta:
         model = Review
-        fields = ('id', 'title', 'text', 'author', 'score', 'pub_date')
-        read_only_fields = ('id', 'title', 'author', 'pub_date')
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
+        read_only_fields = ('title',)
 
     def validate(self, data):
         request = self.context['request']
-        title_id = self.context['title_id']
+        title_id = self.context['request'].parser_context['kwargs']['title_id']
 
         if request.method == 'POST':
             if Review.objects.filter(

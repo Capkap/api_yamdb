@@ -16,7 +16,7 @@ def validate_score_range(value):
     is_valid = constants.MIN_SCORE <= value <= constants.MAX_SCORE
     if not is_valid:
         raise ValidationError(
-            f'Оценка должна быть в диапазоне '
-            f'от {constants.MIN_SCORE} до {constants.MAX_SCORE}'
+            'Оценка должна быть в диапазоне от'
+            f'{constants.MIN_SCORE} до {constants.MAX_SCORE}'
         )
     return value
