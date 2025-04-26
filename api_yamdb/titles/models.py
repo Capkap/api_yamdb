@@ -35,7 +35,7 @@ class Title(models.Model):
         verbose_name='Название',
         db_index=True
     )
-    year = models.IntegerField(
+    year = models.SmallIntegerField(
         verbose_name='Год выпуска',
         db_index=True,
         validators=[validate_year]
@@ -63,6 +63,7 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
+        ordering = ('name',)
 
     def __str__(self):
         return self.name
