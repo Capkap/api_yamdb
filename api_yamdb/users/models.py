@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.tokens import default_token_generator
 from django.db import models
 
 from api_yamdb.constants import LIMIT_EMAIL
@@ -44,6 +43,3 @@ class User(AbstractUser):
     @property
     def is_moderator(self):
         return self.role == self.MODERATOR
-
-    def generate_confirmation_code(self):
-        return default_token_generator.make_token(self)
