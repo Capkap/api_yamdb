@@ -63,7 +63,7 @@ class SignUpSerializer(serializers.Serializer):
     )
     username = serializers.CharField(
         required=True,
-        max_length=150,
+        max_length=constants.LIMIT_USERNAME,
         validators=[RegexValidator(
             regex=constants.USERNAME_REGEX,
             message='Недопустимые символы в username!'
@@ -94,10 +94,8 @@ class SignUpSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
-        user, created = User.objects.get_or_create(**validated_data)
+        user, _ = User.objects.get_or_create(**validated_data)
         confirmation_code = default_token_generator.make_token(user)
-        if created and not user.pk:
-            user.save()
 
         send_mail(
             subject='Ваш код подтверждения YAmdb!',
