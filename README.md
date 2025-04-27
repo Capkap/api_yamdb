@@ -1,8 +1,7 @@
-# Yamdb API
+# 🎬 YaMDb: Платформа для оценки произведений
 
-REST API для сбора отзывов на произведения искусства.
-
-[Документация API](http://127.0.0.1:8000/redoc/)
+**YaMDb** — RESTful API для сбора отзывов и рейтингов произведений искусства.  
+Пользователи взаимодействуют через JWT-аутентификацию, оставляя оценки (1-10) и текстовые рецензии. 
 
 ## Основные возможности
 
@@ -30,10 +29,75 @@ REST API для сбора отзывов на произведения иску
 - Приложение Titles [Саркар Ахмедов](https://github.com/Capkap)
 - Приложение Reviews [Дарья Симашко](https://github.com/musthave-prog)
 
-  <ins>Чтобы запустить проект, необходимо выполнить следующие шаги:</ins>
+
+[Документация API](http://127.0.0.1:8000/redoc/)
+
+### Примеры запросов и ответов: 
+
+Регистрация нового пользователя (POST):
+http://127.0.0.1:8000/api/v1/auth/signup/
+````
+Запрос в формате JSON:
+{
+"email": "user@example.com",
+"username": "^w\\Z"
+}
+
+Ответ в формате JSON:
+
+{
+"email": "string",
+"username": "string"
+}
+````
+Получение JWT-токена (POST):
+http://127.0.0.1:8000/api/v1/auth/token/
+````
+Запрос в формате JSON:
+{
+  "username": "^w\\Z",
+  "confirmation_code": "string"
+}
+
+Ответ в формате JSON:
+
+{
+"token": "string"
+}
+````
+
+Получение списка всех комментариев к отзыву (GET):
+http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/comments/
+````
+Ответ в формате JSON:
+
+{
+  "count": 0,
+  "next": "string",
+  "previous": "string",
+  "results": [
+    {
+      "id": 0,
+      "text": "string",
+      "author": "string",
+      "pub_date": "2019-08-24T14:15:22Z"
+    }
+  ]
+}
+````
+
+### 🛠 Технологии:
+
+!Django 3.2(https://img.shields.io/badge/Django-3.2-092E20)
+
+!DRF 3.12(https://img.shields.io/badge/DRF-3.12-red)
+
+!JWT(https://img.shields.io/badge/Auth-JWT-green)
+
+### <ins>Чтобы запустить проект, необходимо выполнить следующие шаги:</ins>
 
 <details>
-
+  
 Создать виртуальное окружение:
 
 ````

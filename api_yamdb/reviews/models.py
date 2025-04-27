@@ -1,7 +1,8 @@
 from django.db import models
 
 from api.validators import validate_score_range
-from api_yamdb import constants
+
+from api_yamdb.constants import MAX_TEXT_LENGTH
 from titles.models import Title
 from users.models import User
 
@@ -31,8 +32,8 @@ class AbstractReviewComment(models.Model):
 
     def __str__(self):
         return (
-            self.text[:constants.MAX_TEXT_LENGTH] + '...'
-            if len(self.text) > constants.MAX_TEXT_LENGTH
+            self.text[:MAX_TEXT_LENGTH] + '...'
+            if len(self.text) > MAX_TEXT_LENGTH
             else self.text
         )
 

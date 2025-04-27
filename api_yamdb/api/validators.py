@@ -2,7 +2,7 @@ import datetime as dt
 
 from django.core.exceptions import ValidationError
 
-from api_yamdb import constants
+from api_yamdb.constants import MAX_SCORE, MIN_SCORE
 
 
 def validate_year(value):
@@ -13,10 +13,10 @@ def validate_year(value):
 
 
 def validate_score_range(value):
-    is_valid = constants.MIN_SCORE <= value <= constants.MAX_SCORE
+    is_valid = MIN_SCORE <= value <= MAX_SCORE
     if not is_valid:
         raise ValidationError(
             'Оценка должна быть в диапазоне от'
-            f'{constants.MIN_SCORE} до {constants.MAX_SCORE}'
+            f'{MIN_SCORE} до {MAX_SCORE}'
         )
     return value
