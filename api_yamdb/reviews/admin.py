@@ -56,14 +56,14 @@ class CommentAdmin(admin.ModelAdmin):
     @admin.display(description=_('Text'))
     def truncated_text(self, obj):
         return format_html(
-            '<span title="{}">{}...</span>', 
+            '<span title="{}">{}...</span>',
             obj.text, obj.text[:MAX_TEXT_LENGTH]
         )
 
     @admin.display(description=_('Review'))
     def review_link(self, obj):
         return format_html(
-            '<a href="{}">{}</a>', 
+            '<a href="{}">{}</a>',
             f'/admin/reviews/review/{obj.review.id}/change/',
             obj.review.truncated_text()
         )
