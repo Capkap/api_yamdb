@@ -85,7 +85,6 @@ http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/comments/
   ]
 }
 ````
-Файлы хранятся в [api_yamdb/static/data](api_yamdb/static/data)
 
 ### 🛠 Технологии:
 
@@ -137,4 +136,5 @@ python manage.py runserver — для Windows, Mac и Linux.
 ````
 python manage.py load_csv_data — для Windows, Mac и Linux.
 ````
+Файлы хранятся в [api_yamdb/static/data](api_yamdb/static/data)
 </details>
