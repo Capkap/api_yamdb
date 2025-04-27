@@ -88,8 +88,11 @@ http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/comments/
 Файлы хранятся в [api_yamdb/static/data](api_yamdb/static/data)
 
 ### 🛠 Технологии:
-!Django 3.2(https://img.shields.io/badge/Django-3.2-092E20) 
-!DRF 3.12(https://img.shields.io/badge/DRF-3.12-red) 
+
+!Django 3.2(https://img.shields.io/badge/Django-3.2-092E20)
+
+!DRF 3.12(https://img.shields.io/badge/DRF-3.12-red)
+
 !JWT(https://img.shields.io/badge/Auth-JWT-green)
 
 ### <ins>Чтобы запустить проект, необходимо выполнить следующие шаги:</ins>
