@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 
 from api.validators import validate_score_range, validate_year
-from api_yamdb.constants import DEFAULT_RATING_VALUE
+from api_yamdb import constants
 from reviews.models import Comment, Review
 from titles.models import Category, Genre, Title
 from users.models import User
@@ -171,7 +171,7 @@ class TitleGETSerializer(serializers.ModelSerializer):
 
     genre = GenreSerializer(many=True)
     category = CategorySerializer()
-    rating = serializers.IntegerField(default=DEFAULT_RATING_VALUE)
+    rating = serializers.IntegerField(default=constants.DEFAULT_RATING_VALUE)
 
     class Meta:
         model = Title
