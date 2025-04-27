@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from users.models import User
 
+
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     list_display = ('username', 'email', 'role', 'is_active', 'date_joined')
