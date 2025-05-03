@@ -1,9 +1,9 @@
-# 🎬 YaMDb: Платформа для оценки произведений
+## 🎬 YaMDb: Платформа для оценки произведений
 
 **YaMDb** — RESTful API для сбора отзывов и рейтингов произведений искусства.  
 Пользователи взаимодействуют через JWT-аутентификацию, оставляя оценки (1-10) и текстовые рецензии. 
 
-## Основные возможности
+### Основные возможности
 
 🎬 **Произведения**
 
@@ -23,54 +23,49 @@
 - Один отзыв на произведение от пользователя
 - Вложенные комментарии к отзывам
 
-Разработчики
+**Разработчики**
 
 - Приложение Users [Андрей Олонцев]( https://github.com/Yoishiii)
 - Приложение Titles [Саркар Ахмедов](https://github.com/Capkap)
 - Приложение Reviews [Дарья Симашко](https://github.com/musthave-prog)
 
 
-[Документация API](http://127.0.0.1:8000/redoc/)
+### Примеры запросов и ответов
 
-### Примеры запросов и ответов: 
-
-Регистрация нового пользователя (POST):
-http://127.0.0.1:8000/api/v1/auth/signup/
-````
-Запрос в формате JSON:
+Регистрация нового пользователя:
+POST /api/v1/auth/signup/
+```json
+Request:
 {
-"email": "user@example.com",
-"username": "^w\\Z"
+  "email": "user@example.com",
+  "username": "^w\\Z"
 }
 
-Ответ в формате JSON:
-
+Response:
 {
-"email": "string",
-"username": "string"
+  "email": "string",
+  "username": "string"
 }
-````
-Получение JWT-токена (POST):
-http://127.0.0.1:8000/api/v1/auth/token/
-````
-Запрос в формате JSON:
+```
+Получение JWT-токена:
+POST /api/v1/auth/token/
+```json
+Request:
 {
   "username": "^w\\Z",
   "confirmation_code": "string"
 }
 
-Ответ в формате JSON:
-
+Response:
 {
-"token": "string"
+  "token": "string"
 }
-````
+```
 
-Получение списка всех комментариев к отзыву (GET):
-http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/comments/
-````
-Ответ в формате JSON:
-
+Получение списка всех комментариев к отзыву:
+GET /api/v1/titles/{title_id}/reviews/{review_id}/comments/
+```json
+Response:
 {
   "count": 0,
   "next": "string",
@@ -84,17 +79,19 @@ http://127.0.0.1:8000/api/v1/titles/{title_id}/reviews/{review_id}/comments/
     }
   ]
 }
-````
+```
 
-### 🛠 Технологии:
+Полная документация API доступна после запуска сервера в формате [redoc](http://127.0.0.1:8000/redoc/) 
 
-!Django 3.2(https://img.shields.io/badge/Django-3.2-092E20)
+### Технологии
 
-!DRF 3.12(https://img.shields.io/badge/DRF-3.12-red)
+![Django 3.2](https://img.shields.io/badge/Django-3.2-092E20)
 
-!JWT(https://img.shields.io/badge/Auth-JWT-green)
+![DRF 3.12](https://img.shields.io/badge/DRF-3.12-red)
 
-### <ins>Чтобы запустить проект, необходимо выполнить следующие шаги:</ins>
+![JWT](https://img.shields.io/badge/Auth-JWT-green)
+
+### Запуск проекта
 
 <details>
   
@@ -132,9 +129,9 @@ python manage.py runserver — для Windows, Mac и Linux.
 ````
 
 Импорт данных из csv файлов:
-
 ````
 python manage.py load_csv_data — для Windows, Mac и Linux.
 ````
-Файлы хранятся в [api_yamdb/static/data](api_yamdb/static/data)
+Файлы для импорта хранятся в [api_yamdb/static/data](api_yamdb/static/data)
+
 </details>
